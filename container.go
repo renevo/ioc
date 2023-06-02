@@ -5,18 +5,14 @@ import (
 	"sync"
 )
 
-const _DEFAULT_ = ""
-
-var (
-	global = &Container{}
-)
-
+// Container registers and resolves types to a map of named values.
 type Container struct {
 	mu    sync.RWMutex
 	types map[reflect.Type]map[string]reflect.Value
 }
 
-func (c *Container) Register(name string, t reflect.Type, v any) {
+// Register will store the supplied type with the value at name.
+func (c *Container) Register(name string, t reflect.Type, value any) {
 	c.mu.Lock()
 	if c.types == nil {
 		c.types = make(map[reflect.Type]map[string]reflect.Value)
@@ -26,12 +22,13 @@ func (c *Container) Register(name string, t reflect.Type, v any) {
 		c.types[t] = make(map[string]reflect.Value)
 	}
 
-	c.types[t][name] = reflect.ValueOf(v)
+	c.types[t][name] = reflect.ValueOf(value)
 
 	c.mu.Unlock()
 }
 
-func (c *Container) Resolve(name string, t reflect.Type) (any, bool) {
+// Resolve will lookup the type and return a value matching the supplied name.
+func (c *Container) Resolve(name string, t reflect.Type) (value any, found bool) {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
 
@@ -49,7 +46,8 @@ func (c *Container) Resolve(name string, t reflect.Type) (any, bool) {
 	return nil, false
 }
 
-func (c *Container) ResolveAll(t reflect.Type) []any {
+// ResolveAll will lookup the type and return all values registered.
+func (c *Container) ResolveAll(t reflect.Type) (values []any) {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
 
@@ -68,42 +66,4 @@ func (c *Container) ResolveAll(t reflect.Type) []any {
 	}
 
 	return instances
-}
-
-func Register[T any](v T) {
-	RegisterNamed(_DEFAULT_, v)
-}
-
-func RegisterNamed[T any](name string, v T) {
-	var instance T
-	global.Register(name, reflect.TypeOf(instance), v)
-}
-
-func Resolve[T any]() (T, bool) {
-	return ResolveNamed[T](_DEFAULT_)
-}
-
-func ResolveNamed[T any](name string) (T, bool) {
-	var result T
-
-	v, found := global.Resolve(name, reflect.TypeOf(result))
-	if found {
-		return v.(T), found
-	}
-
-	return result, false
-}
-
-func ResolveAll[T any]() []T {
-	var instance T
-
-	instances := global.ResolveAll(reflect.TypeOf(instance))
-
-	results := make([]T, len(instances))
-
-	for i := 0; i < len(results); i++ {
-		results[i] = instances[i].(T)
-	}
-
-	return results
 }
