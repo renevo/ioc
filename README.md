@@ -1,7 +1,7 @@
 # Inversion Of Control Container
 
 [![GoDoc](https://godoc.org/github.com/renevo/ioc?status.svg)](https://godoc.org/github.com/renevo/ioc)
-[![Go Report Card](https://goreportcard.com/badge/github.com/renevo/ioc)](https://goreportcard.com/report/github.com/renevo/ioc) 
+[![Go Report Card](https://goreportcard.com/badge/github.com/renevo/ioc)](https://goreportcard.com/report/github.com/renevo/ioc)
 [![Test](https://github.com/renevo/ioc/actions/workflows/test.yml/badge.svg)](https://github.com/renevo/ioc/actions/workflows/test.yml)
 
 This package provides a simple utility container for faciliting Inversion of Control software pattern. For clarity, this is not a dependency injection framework, merely a go routine safe container to share interfaces across an application.
@@ -19,8 +19,6 @@ This package contains no `init()` functions.
 ## Context Access
 
 Functions to interact with the container from `context.Context` are provided so that the container can be infered from a parent context. (see example).
-
-Given that a container is not available in the supplied context, the `ioc.FromContext` function will return the global `ioc.Container`.
 
 ## Custom Access
 
