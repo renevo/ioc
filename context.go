@@ -1,6 +1,14 @@
 package ioc
 
-import "context"
+import (
+	"context"
+	"errors"
+)
+
+var (
+	// ErrContainerNotInContext is used when a container is not found in the context.
+	ErrContainerNotInContext = errors.New("container not found in context")
+)
 
 type contextKey string
 
@@ -15,33 +23,68 @@ func WithContext(ctx context.Context, container *Container) context.Context {
 func FromContext(ctx context.Context) *Container {
 	v := ctx.Value(iocContextKey)
 	if v == nil {
-		return global
+		return nil
 	}
 
 	return v.(*Container)
 }
 
 // RegisterToContext will register the supplied value of type T as the default value when using ResolveFromContext().
+//
+// This function will panic if the context does not contain a container.
 func RegisterToContext[T any](ctx context.Context, value T) {
-	(&GenericContainer[T]{Container: FromContext(ctx)}).Register(value)
+	container := FromContext(ctx)
+	if container == nil {
+		panic(ErrContainerNotInContext)
+	}
+
+	(&GenericContainer[T]{Container: container}).Register(value)
 }
 
 // RegisterNamedToContext will register the supplied value of type T with the specified name.
+//
+// This function will panic if the context does not contain a container.
 func RegisterNamedToContext[T any](ctx context.Context, name string, value T) {
-	(&GenericContainer[T]{Container: FromContext(ctx)}).RegisterNamed(name, value)
+	container := FromContext(ctx)
+	if container == nil {
+		panic(ErrContainerNotInContext)
+	}
+
+	(&GenericContainer[T]{Container: container}).RegisterNamed(name, value)
 }
 
 // ResolveFromContext will lookup the default registered value.
+//
+// This function will panic if the context does not contain a container.
 func ResolveFromContext[T any](ctx context.Context) (value T, found bool) {
-	return (&GenericContainer[T]{Container: FromContext(ctx)}).Resolve()
+	container := FromContext(ctx)
+	if container == nil {
+		panic(ErrContainerNotInContext)
+	}
+
+	return (&GenericContainer[T]{Container: container}).Resolve()
 }
 
 // ResolveNamedFromContext will lookup the value with the specified name.
+//
+// This function will panic if the context does not contain a container.
 func ResolveNamedFromContext[T any](ctx context.Context, name string) (value T, found bool) {
-	return (&GenericContainer[T]{Container: FromContext(ctx)}).ResolveNamed(name)
+	container := FromContext(ctx)
+	if container == nil {
+		panic(ErrContainerNotInContext)
+	}
+
+	return (&GenericContainer[T]{Container: container}).ResolveNamed(name)
 }
 
 // ResolveAllFromContext will lookup and return all values registered.
+//
+// This function will panic if the context does not contain a container.
 func ResolveAllFromContext[T any](ctx context.Context) (values []T) {
-	return (&GenericContainer[T]{Container: FromContext(ctx)}).ResolveAll()
+	container := FromContext(ctx)
+	if container == nil {
+		panic(ErrContainerNotInContext)
+	}
+
+	return (&GenericContainer[T]{Container: container}).ResolveAll()
 }
