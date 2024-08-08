@@ -21,7 +21,7 @@ func (c *GenericContainer[T]) RegisterNamed(name string, value T) {
 	}
 
 	var instance T
-	c.Container.Register(name, reflect.TypeOf(instance), value)
+	c.Container.Register(name, reflect.TypeOf(&instance).Elem(), value)
 }
 
 // Resolve will lookup the default registered value.
@@ -36,7 +36,7 @@ func (c *GenericContainer[T]) ResolveNamed(name string) (value T, found bool) {
 	}
 
 	var result T
-	v, found := c.Container.Resolve(name, reflect.TypeOf(result))
+	v, found := c.Container.Resolve(name, reflect.TypeOf(&result).Elem())
 	if found {
 		return v.(T), found
 	}
@@ -52,7 +52,7 @@ func (c *GenericContainer[T]) ResolveAll() (value []T) {
 
 	var instance T
 
-	instances := c.Container.ResolveAll(reflect.TypeOf(instance))
+	instances := c.Container.ResolveAll(reflect.TypeOf(&instance).Elem())
 
 	results := make([]T, len(instances))
 
