@@ -67,3 +67,25 @@ func (c *Container) ResolveAll(t reflect.Type) (values []any) {
 
 	return instances
 }
+
+// ResolveAllNamed will lookup the type and return all values registered with their names.
+func (c *Container) ResolveAllNamed(t reflect.Type) (values map[string]any) {
+	c.mu.RLock()
+	defer c.mu.RUnlock()
+
+	values = make(map[string]any)
+	if c.types == nil {
+		return values
+	}
+
+	instanceContainer, found := c.types[t]
+	if !found {
+		return values
+	}
+
+	for name, instance := range instanceContainer {
+		values[name] = instance.Interface()
+	}
+
+	return values
+}

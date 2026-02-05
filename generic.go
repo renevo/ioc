@@ -62,3 +62,22 @@ func (c *GenericContainer[T]) ResolveAll() (value []T) {
 
 	return results
 }
+
+// ResolveAllNamed will lookup and return all values registered with their names.
+func (c *GenericContainer[T]) ResolveAllNamed() (value map[string]T) {
+	if c.Container == nil {
+		panic("GenericContainer.Container is nil")
+	}
+
+	var instance T
+
+	instances := c.Container.ResolveAllNamed(reflect.TypeOf(&instance).Elem())
+
+	results := make(map[string]T, len(instances))
+
+	for name, instance := range instances {
+		results[name] = instance.(T)
+	}
+
+	return results
+}
