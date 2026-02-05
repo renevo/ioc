@@ -12,7 +12,7 @@ func TestContainer(t *testing.T) {
 	ctx := ioc.WithContext(context.Background(), &ioc.Container{})
 
 	ioc.RegisterToContext[io.Writer](ctx, &w{})
-	ioc.RegisterNamedToContext[io.Writer](ctx, "discard", io.Discard)
+	ioc.RegisterNamedToContext(ctx, "discard", io.Discard)
 
 	type writerFactory func() io.Writer
 

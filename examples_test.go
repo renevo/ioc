@@ -16,7 +16,7 @@ func ExampleRegister() {
 	registered, _ := ioc.Resolve[int]()
 	writer, _ := ioc.Resolve[io.Writer]()
 
-	fmt.Fprintln(writer, registered)
+	_, _ = fmt.Fprintln(writer, registered)
 	// output:
 	// 5
 }
@@ -30,7 +30,7 @@ func ExampleRegisterToContext() {
 	registered, _ := ioc.ResolveFromContext[int](ctx)
 	writer, _ := ioc.ResolveFromContext[io.Writer](ctx)
 
-	fmt.Fprintln(writer, registered)
+	_, _ = fmt.Fprintln(writer, registered)
 	// output:
 	// 5
 }

@@ -26,3 +26,8 @@ func ResolveNamed[T any](name string) (value T, found bool) {
 func ResolveAll[T any]() (values []T) {
 	return (&GenericContainer[T]{Container: global}).ResolveAll()
 }
+
+// ResolveAllNamed will lookup the type and return all values registered with their names.
+func ResolveAllNamed[T any]() (values map[string]T) {
+	return (&GenericContainer[T]{Container: global}).ResolveAllNamed()
+}

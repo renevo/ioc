@@ -88,3 +88,15 @@ func ResolveAllFromContext[T any](ctx context.Context) (values []T) {
 
 	return (&GenericContainer[T]{Container: container}).ResolveAll()
 }
+
+// ResolveAllNamedFromContext will lookup the type and return all values registered with their names.
+//
+// This function will panic if the context does not contain a container.
+func ResolveAllNamedFromContext[T any](ctx context.Context) (values map[string]T) {
+	container := FromContext(ctx)
+	if container == nil {
+		panic(ErrContainerNotInContext)
+	}
+
+	return (&GenericContainer[T]{Container: container}).ResolveAllNamed()
+}
